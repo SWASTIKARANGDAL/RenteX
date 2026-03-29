@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block title %}Invoice #{{ booking.booking_number }} – RenteX{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex justify-content-end mb-3 gap-2">
+    <button onclick="window.print()" class="btn-rx-primary btn"><i class="bi bi-printer me-2"></i>Print Invoice</button>
+    <a href="/bookings/{{ booking.pk }}/" class="btn-rx-outline btn"><i class="bi bi-arrow-left me-2"></i>Back</a>
+  </div>
+
+  <div class="rx-card p-5" id="invoice" style="max-width:750px;margin:0 auto;">
+    <!-- Invoice header -->
+    <div class="d-flex justify-content-between align-items-start mb-5">
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;">Rente<span style="color:var(--rx-orange);">X</span></div>
+        <div style="color:var(--rx-mid);font-size:0.85rem;margin-top:0.3rem;">Electronics Rental Platform</div>
+        <div style="color:var(--rx-mid);font-size:0.85rem;">support@rentex.com | www.rentex.com</div>
+      </div>
+      <div class="text-end">
+        <div style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:var(--rx-orange);">INVOICE</div>
+        <div style="font-weight:600;">#{{ booking.booking_number }}</div>
+        <div style="font-size:0.85rem;color:var(--rx-mid);">Issued: {{ booking.created_at|date:"d M Y" }}</div>
+        <div style="margin-top:0.5rem;">
+          <span class="badge status-{{ booking.status }}" style="font-size:0.85rem;padding:0.4rem 0.8rem;">{{ booking.get_status_display }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Parties -->
+    <div class="row g-4 mb-5">
+      <div class="col-6">
+        <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--rx-mid);margin-bottom:0.5rem;">Bill To (Renter)</div>
+        <div style="font-weight:700;">{{ booking.renter.get_full_name|default:booking.renter.username }}</div>
+        <div style="font-size:0.88rem;color:#444;">{{ booking.renter.email }}</div>
+        {% if booking.renter.phone %}<div style="font-size:0.88rem;color:#444;">{{ booking.renter.phone }}</div>{% endif %}
+        {% if booking.renter.city %}<div style="font-size:0.88rem;color:#444;">{{ booking.renter.city }}, {{ booking.renter.state }}</div>{% endif %}
+      </div>
+      <div class="col-6 text-end">
+        <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--rx-mid);margin-bottom:0.5rem;">Owner</div>
+        <div style="font-weight:700;">{{ booking.product.owner.get_full_name|default:booking.product.owner.username }}</div>
+        <div style="font-size:0.88rem;color:#444;">{{ booking.product.owner.email }}</div>
+        {% if booking.product.owner.city %}<div style="font-size:0.88rem;color:#444;">{{ booking.product.city }}, {{ booking.product.state }}</div>{% endif %}
+      </div>
+    </div>
+
+    <!-- Product table -->
+    <table class="table" style="border-radius:12px;overflow:hidden;">
+      <thead style="background:var(--rx-dark);color:#fff;">
+        <tr>
+          <th style="padding:1rem;border:none;">Description</th>
+          <th style="padding:1rem;border:none;text-align:center;">Period</th>
+          <th style="padding:1rem;border:none;text-align:center;">Days</th>
+          <th style="padding:1rem;border:none;text-align:right;">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid var(--rx-border);">
+          <td style="padding:1rem;">
+            <div style="font-weight:700;">{{ booking.product.name }}</div>
+            {% if booking.product.brand %}<div style="font-size:0.82rem;color:var(--rx-mid);">{{ booking.product.brand }} | {{ booking.product.get_condition_display }}</div>{% endif %}
+            <div style="font-size:0.82rem;color:var(--rx-mid);">{{ booking.product.city }}, {{ booking.product.state }}</div>
+          </td>
+          <td style="padding:1rem;text-align:center;font-size:0.88rem;">{{ booking.start_date }} –<br/>{{ booking.end_date }}</td>
+          <td style="padding:1rem;text-align:center;">{{ booking.duration_days }}</td>
+          <td style="padding:1rem;text-align:right;font-weight:600;">₹{{ booking.rental_amount }}</td>
+        </tr>
+        {% if booking.deposit_amount > 0 %}
+        <tr style="border-bottom:1px solid var(--rx-border);">
+          <td colspan="3" style="padding:1rem;color:var(--rx-mid);">Refundable Security Deposit</td>
+          <td style="padding:1rem;text-align:right;font-weight:600;">₹{{ booking.deposit_amount }}</td>
+        </tr>
+        {% endif %}
+      </tbody>
+      <tfoot>
+        <tr style="background:var(--rx-gray);">
+          <td colspan="3" style="padding:1rem;font-weight:800;font-family:'Syne',sans-serif;font-size:1.1rem;">TOTAL</td>
+          <td style="padding:1rem;text-align:right;font-weight:800;font-size:1.3rem;color:var(--rx-orange);">₹{{ booking.total_amount }}</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    {% if booking.payment %}
+    <div style="margin-top:1.5rem;padding:1rem;background:#D1FAE5;border-radius:12px;">
+      <div style="font-weight:700;color:#065F46;"><i class="bi bi-check-circle me-2"></i>Payment Confirmed</div>
+      <div style="font-size:0.85rem;color:#065F46;margin-top:0.25rem;">Payment ID: {{ booking.payment.gateway_payment_id|default:"—" }} · Paid on {{ booking.payment.paid_at|date:"d M Y"|default:"—" }}</div>
+    </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <div style="margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--rx-border);text-align:center;font-size:0.8rem;color:var(--rx-mid);">
+      <p>Thank you for using RenteX! For support: support@rentex.com</p>
+      <p style="margin:0;">This is a computer-generated invoice and does not require a physical signature.</p>
+    </div>
+  </div>
+</div>
+
+<style>
+@media print {
+  .rx-navbar, .rx-footer, .d-flex.justify-content-end { display: none !important; }
+  .container { max-width: 100%; }
+}
+</style>
+{% endblock %}

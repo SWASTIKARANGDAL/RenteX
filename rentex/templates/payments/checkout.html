@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block title %}Checkout – RenteX{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <h2 style="font-family:'Syne',sans-serif;font-weight:800;margin-bottom:0.5rem;">Complete Payment</h2>
+      <p style="color:var(--rx-mid);margin-bottom:2rem;">Booking #{{ booking.booking_number }}</p>
+
+      <div class="row g-4">
+
+        <!-- Order Summary -->
+        <div class="col-md-5 order-md-2">
+          <div class="rx-card p-4">
+            <h6 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1rem;font-size:0.9rem;text-transform:uppercase;letter-spacing:0.05em;">Order Summary</h6>
+            {% if booking.product.primary_image %}
+            <img src="{{ booking.product.primary_image.image.url }}" alt="" style="width:100%;border-radius:10px;height:120px;object-fit:cover;margin-bottom:1rem;"/>
+            {% endif %}
+            <div style="font-weight:700;margin-bottom:0.3rem;">{{ booking.product.name }}</div>
+            <div style="font-size:0.85rem;color:var(--rx-mid);margin-bottom:1.5rem;">{{ booking.start_date }} → {{ booking.end_date }} · {{ booking.duration_days }} days</div>
+            <div style="border-top:1px solid var(--rx-border);padding-top:1rem;">
+              <div style="display:flex;justify-content:space-between;font-size:0.9rem;margin-bottom:0.4rem;"><span>Rental</span><span>₹{{ booking.rental_amount }}</span></div>
+              {% if booking.deposit_amount > 0 %}
+              <div style="display:flex;justify-content:space-between;font-size:0.9rem;margin-bottom:0.4rem;"><span>Deposit</span><span>₹{{ booking.deposit_amount }}</span></div>
+              {% endif %}
+              <div style="display:flex;justify-content:space-between;font-weight:800;font-size:1.1rem;margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--rx-border);">
+                <span>Total</span><span style="color:var(--rx-orange);">₹{{ booking.total_amount }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment form -->
+        <div class="col-md-7 order-md-1">
+          <div class="rx-card p-4">
+            <h6 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1.5rem;">Select Payment Method</h6>
+
+            <!-- Demo mode banner -->
+            <div class="alert rx-alert" style="background:#FEF3C7;color:#92400E;margin-bottom:1.5rem;">
+              <i class="bi bi-info-circle me-2"></i>
+              <strong>Demo Mode:</strong> Use the demo button below to simulate payment without a real gateway.
+            </div>
+
+            {% if gateway == 'razorpay' %}
+            <div style="border:2px solid var(--rx-orange);border-radius:12px;padding:1rem;margin-bottom:1rem;">
+              <div class="d-flex align-items-center gap-2 mb-3">
+                <div style="width:40px;height:40px;background:var(--rx-orange);border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                  <i class="bi bi-credit-card" style="color:#fff;"></i>
+                </div>
+                <div><div style="font-weight:700;">Razorpay</div><div style="font-size:0.8rem;color:var(--rx-mid);">Cards, UPI, Netbanking, Wallets</div></div>
+              </div>
+              <button id="rzpBtn" class="btn-rx-primary btn w-100 btn-lg" onclick="openRazorpay()">
+                <i class="bi bi-lock me-2"></i>Pay ₹{{ booking.total_amount }} Securely
+              </button>
+            </div>
+            {% endif %}
+
+            <div style="text-align:center;margin:1.5rem 0;color:var(--rx-mid);font-size:0.85rem;">— OR —</div>
+
+            <!-- Demo payment -->
+            <a href="/payments/demo-complete/{{ booking.pk }}/" class="btn w-100 btn-lg" style="border:2px dashed #10B981;color:#10B981;border-radius:12px;font-weight:700;">
+              <i class="bi bi-play-circle me-2"></i>[DEMO] Simulate Successful Payment
+            </a>
+
+            <div class="d-flex justify-content-center gap-4 mt-4 pt-4" style="border-top:1px solid var(--rx-border);">
+              <span style="font-size:0.78rem;color:var(--rx-mid);text-align:center;"><i class="bi bi-shield-lock" style="color:var(--rx-orange);font-size:1.4rem;display:block;"></i>SSL Encrypted</span>
+              <span style="font-size:0.78rem;color:var(--rx-mid);text-align:center;"><i class="bi bi-bank" style="color:var(--rx-orange);font-size:1.4rem;display:block;"></i>RBI Compliant</span>
+              <span style="font-size:0.78rem;color:var(--rx-mid);text-align:center;"><i class="bi bi-arrow-counterclockwise" style="color:var(--rx-orange);font-size:1.4rem;display:block;"></i>Refund Policy</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+function openRazorpay() {
+  var options = {
+    key: '{{ razorpay_key }}',
+    amount: {{ payment.amount_in_paise }},
+    currency: 'INR',
+    name: 'RenteX',
+    description: 'Booking #{{ booking.booking_number }}',
+    order_id: '{{ payment.gateway_order_id }}',
+    handler: function(response) {
+      var form = document.createElement('form');
+      form.method = 'POST';
+      form.action = '/payments/success/{{ booking.pk }}/';
+      var csrf = document.createElement('input');
+      csrf.type = 'hidden'; csrf.name = 'csrfmiddlewaretoken'; csrf.value = '{{ csrf_token }}';
+      var pid = document.createElement('input');
+      pid.type = 'hidden'; pid.name = 'razorpay_payment_id'; pid.value = response.razorpay_payment_id;
+      var sig = document.createElement('input');
+      sig.type = 'hidden'; sig.name = 'razorpay_signature'; sig.value = response.razorpay_signature;
+      form.appendChild(csrf); form.appendChild(pid); form.appendChild(sig);
+      document.body.appendChild(form);
+      form.submit();
+    },
+    prefill: { name: '{{ user.get_full_name }}', email: '{{ user.email }}', contact: '{{ user.phone }}' },
+    theme: { color: '#FF5C00' }
+  };
+  var rzp = new Razorpay(options);
+  rzp.open();
+}
+</script>
+{% endblock %}

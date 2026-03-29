@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Notifications – RenteX{% endblock %}
+
+{% block content %}
+<div class="rx-page-header">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center">
+      <div><h1>Notifications</h1><p style="opacity:0.7;margin:0;">Stay updated on your bookings and activity</p></div>
+      <button onclick="markAllRead()" class="btn-rx-outline btn" style="color:#fff;border-color:rgba(255,255,255,0.5);">Mark All Read</button>
+    </div>
+  </div>
+</div>
+
+<div class="container py-5" style="max-width:700px;">
+  {% if notifications %}
+  <div class="d-flex flex-column gap-3">
+    {% for notif in notifications %}
+    <div class="rx-card p-4 {% if not notif.is_read %}border-start border-3 border-orange{% endif %}">
+      <div class="d-flex gap-3 align-items-start">
+        <div style="width:44px;height:44px;border-radius:12px;background:{% if 'confirmed' in notif.notification_type %}rgba(16,185,129,0.1){% elif 'rejected' in notif.notification_type or 'cancelled' in notif.notification_type %}rgba(239,68,68,0.1){% elif 'payment' in notif.notification_type %}rgba(59,130,246,0.1){% else %}rgba(255,92,0,0.1){% endif %};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="bi bi-{% if 'payment' in notif.notification_type %}credit-card{% elif 'confirmed' in notif.notification_type %}check-circle{% elif 'rejected' in notif.notification_type or 'cancelled' in notif.notification_type %}x-circle{% elif 'review' in notif.notification_type %}star{% else %}calendar{% endif %}" style="font-size:1.2rem;color:{% if 'confirmed' in notif.notification_type %}#10B981{% elif 'rejected' in notif.notification_type or 'cancelled' in notif.notification_type %}#EF4444{% elif 'payment' in notif.notification_type %}#3B82F6{% else %}var(--rx-orange){% endif %};"></i>
+        </div>
+        <div style="flex:1;">
+          <div style="font-weight:700;margin-bottom:0.2rem;">{{ notif.title }}</div>
+          <p style="margin:0;color:#444;font-size:0.9rem;line-height:1.6;">{{ notif.message }}</p>
+          <div style="font-size:0.78rem;color:var(--rx-mid);margin-top:0.4rem;">{{ notif.created_at|timesince }} ago</div>
+        </div>
+        {% if notif.link %}
+        <a href="{{ notif.link }}" class="btn btn-sm flex-shrink-0" style="border-radius:8px;border:1.5px solid var(--rx-border);">View</a>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div style="text-align:center;padding:5rem 0;color:var(--rx-mid);">
+    <i class="bi bi-bell-slash" style="font-size:4rem;display:block;margin-bottom:1rem;"></i>
+    <h4 style="font-family:'Syne',sans-serif;font-weight:700;">No notifications yet</h4>
+    <p>When you make or receive bookings, you'll see updates here.</p>
+  </div>
+  {% endif %}
+</div>
+<script>
+function markAllRead() {
+  fetch('/api/notifications/mark-all-read/', {
+    method: 'POST',
+    headers: {'X-CSRFToken': '{{ csrf_token }}'}
+  }).then(() => location.reload());
+}
+</script>
+{% endblock %}

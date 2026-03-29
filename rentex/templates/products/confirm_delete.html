@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Delete Product – RenteX{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="rx-card p-5 text-center">
+        <i class="bi bi-exclamation-triangle" style="font-size:3.5rem;color:#EF4444;display:block;margin-bottom:1rem;"></i>
+        <h3 style="font-family:'Syne',sans-serif;font-weight:800;margin-bottom:0.5rem;">Delete Product?</h3>
+        <p style="color:var(--rx-mid);margin-bottom:2rem;">Are you sure you want to delete <strong>"{{ product.name }}"</strong>? This action cannot be undone and all associated bookings will be affected.</p>
+        <div class="d-flex gap-3 justify-content-center">
+          <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-lg" style="border-radius:12px;font-weight:700;"><i class="bi bi-trash me-2"></i>Yes, Delete It</button>
+          </form>
+          <a href="/products/my/" class="btn-rx-outline btn btn-lg">Cancel</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

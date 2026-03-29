@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <style>
+    body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #F5F5F0; margin: 0; padding: 0; }
+    .wrapper { max-width: 600px; margin: 0 auto; padding: 2rem 1rem; }
+    .card { background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+    .header { background: #0D0D0D; padding: 2rem; text-align: center; }
+    .header .brand { font-size: 1.8rem; font-weight: 800; color: #fff; }
+    .header .brand span { color: #FF5C00; }
+    .body { padding: 2rem; }
+    .greeting { font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; color: #0D0D0D; }
+    .message { color: #444; line-height: 1.7; margin-bottom: 1.5rem; }
+    .highlight-box { background: #FFF7F3; border: 1.5px solid rgba(255,92,0,0.2); border-radius: 12px; padding: 1.2rem; margin-bottom: 1.5rem; }
+    .highlight-box .label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #FF5C00; margin-bottom: 0.4rem; }
+    .highlight-box .value { font-weight: 700; color: #0D0D0D; }
+    .btn { display: inline-block; background: #FF5C00; color: #fff !important; text-decoration: none; padding: 0.8rem 2rem; border-radius: 10px; font-weight: 700; font-size: 0.95rem; }
+    .footer { padding: 1.5rem 2rem; border-top: 1px solid #E5E5E0; text-align: center; font-size: 0.8rem; color: #999; }
+    .status-badge { display: inline-block; padding: 0.3rem 0.9rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="card">
+      <div class="header">
+        <div class="brand">Rente<span>X</span></div>
+      </div>
+      <div class="body">
+        <div class="greeting">Hello, {{ user.display_name }}! 👋</div>
+        <div class="message">{{ message }}</div>
+
+        <div class="highlight-box">
+          <div class="label">Booking Details</div>
+          <div class="value">{{ booking.product.name }}</div>
+          <div style="color:#666; font-size:0.9rem; margin-top:0.4rem;">
+            📅 {{ booking.start_date }} → {{ booking.end_date }} ({{ booking.duration_days }} days)<br/>
+            🔖 Booking #{{ booking.booking_number }}<br/>
+            💰 Total: ₹{{ booking.total_amount }}
+          </div>
+        </div>
+
+        <a href="http://localhost:8000/bookings/{{ booking.pk }}/" class="btn">View Booking Details</a>
+      </div>
+      <div class="footer">
+        <p>You're receiving this because you have an account on RenteX.</p>
+        <p style="margin:0;">© 2025 RenteX Technologies. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

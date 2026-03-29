@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}How It Works – RenteX{% endblock %}
+
+{% block content %}
+<div class="rx-page-header">
+  <div class="container text-center">
+    <h1>How RenteX Works</h1>
+    <p style="opacity:0.7;font-size:1.1rem;">Rent electronics in 4 simple steps</p>
+  </div>
+</div>
+
+<div class="container py-5">
+  <!-- For Renters -->
+  <h3 style="font-family:'Syne',sans-serif;font-weight:800;margin-bottom:2rem;">🎮 For Renters</h3>
+  <div class="row g-4 mb-5">
+    {% for step in "1234" %}
+    <div class="col-md-3">
+      <div class="rx-card p-4 text-center h-100">
+        <div style="width:56px;height:56px;border-radius:50%;background:var(--rx-orange);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;margin:0 auto 1rem;">{{ forloop.counter }}</div>
+        <h5 style="font-family:'Syne',sans-serif;font-weight:700;">{% cycle 'Search Products' 'Pick Dates' 'Book & Pay' 'Receive & Return' %}</h5>
+        <p style="color:var(--rx-mid);font-size:0.9rem;">{% cycle 'Browse thousands of electronics across categories and cities near you.' 'Choose your rental start and end dates. See instant price calculation.' 'Owner approves your request. Pay securely via Razorpay or Stripe.' 'Get the item delivered or pick up. Return in good condition at the end.' %}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- For Owners -->
+  <h3 style="font-family:'Syne',sans-serif;font-weight:800;margin-bottom:2rem;">💰 For Owners</h3>
+  <div class="row g-4 mb-5">
+    {% for step in "1234" %}
+    <div class="col-md-3">
+      <div class="rx-card p-4 text-center h-100">
+        <div style="width:56px;height:56px;border-radius:50%;background:var(--rx-dark);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;margin:0 auto 1rem;">{{ forloop.counter }}</div>
+        <h5 style="font-family:'Syne',sans-serif;font-weight:700;">{% cycle 'Create Account' 'List Products' 'Accept Bookings' 'Get Paid' %}</h5>
+        <p style="color:var(--rx-mid);font-size:0.9rem;">{% cycle 'Sign up as an owner. Verify your identity for trust and safety.' 'Add your electronics with photos, description, and your daily rate.' 'Review booking requests. Accept or decline with a reason.' 'Payment is automatically released to your account upon booking completion.' %}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- FAQ -->
+  <h3 style="font-family:'Syne',sans-serif;font-weight:800;margin-bottom:2rem;">Frequently Asked Questions</h3>
+  <div class="accordion" id="faqAccordion">
+    {% for q in "12345" %}
+    <div class="accordion-item" style="border:1px solid var(--rx-border);border-radius:12px;margin-bottom:0.75rem;overflow:hidden;">
+      <h2 class="accordion-header">
+        <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#faq{{ forloop.counter }}" style="font-weight:600;">
+          {% cycle 'Is my payment secure?' 'What if something is damaged?' 'How do I get paid as an owner?' 'Can I cancel a booking?' 'Is there a minimum rental period?' %}
+        </button>
+      </h2>
+      <div id="faq{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" data-bs-parent="#faqAccordion">
+        <div class="accordion-body" style="color:var(--rx-mid);">
+          {% cycle 'Yes! All payments are processed through Razorpay or Stripe with 256-bit SSL encryption. We never store your card details.' 'We require a security deposit that covers potential damage. Both parties must agree on the item condition before and after rental.' 'Earnings are transferred to your bank account within 2-3 business days after booking completion. No hidden charges.' 'Renters can cancel before owner confirmation for a full refund. After confirmation, cancellation policies vary by owner.' 'Most products have a minimum rental of 1 day. Owners can set their own minimums in their listing settings.' %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<section style="background:var(--rx-orange);padding:4rem 0;text-align:center;color:#fff;">
+  <h2 style="font-family:'Syne',sans-serif;font-weight:800;margin-bottom:1rem;">Ready to Get Started?</h2>
+  <div class="d-flex justify-content-center gap-3 flex-wrap">
+    <a href="/accounts/signup/" class="btn btn-light btn-lg" style="font-weight:700;border-radius:12px;color:var(--rx-orange);">Create Free Account</a>
+    <a href="/products/" class="btn btn-outline-light btn-lg" style="border-radius:12px;">Browse Products</a>
+  </div>
+</section>
+{% endblock %}

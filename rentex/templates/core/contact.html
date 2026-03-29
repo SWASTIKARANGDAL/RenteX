@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Contact Us – RenteX{% endblock %}
+
+{% block content %}
+<div class="rx-page-header"><div class="container text-center"><h1>Contact Us</h1></div></div>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <div class="rx-card p-5">
+        <h4 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1.5rem;">Get In Touch</h4>
+        <form class="rx-form">
+          <div class="row g-3">
+            <div class="col-md-6"><label class="form-label">Name</label><input type="text" class="form-control" placeholder="Your name"/></div>
+            <div class="col-md-6"><label class="form-label">Email</label><input type="email" class="form-control" placeholder="your@email.com"/></div>
+            <div class="col-12"><label class="form-label">Subject</label><input type="text" class="form-control" placeholder="How can we help?"/></div>
+            <div class="col-12"><label class="form-label">Message</label><textarea class="form-control" rows="5" placeholder="Describe your issue or question..."></textarea></div>
+          </div>
+          <button type="submit" class="btn-rx-primary btn w-100 mt-4">Send Message</button>
+        </form>
+        <div class="mt-4 pt-4" style="border-top:1px solid var(--rx-border);">
+          <div class="d-flex gap-3 flex-wrap">
+            <a href="mailto:support@rentex.com" style="color:var(--rx-orange);text-decoration:none;font-size:0.9rem;"><i class="bi bi-envelope me-1"></i>support@rentex.com</a>
+            <span style="color:var(--rx-mid);font-size:0.9rem;"><i class="bi bi-clock me-1"></i>Mon–Fri, 9am–6pm IST</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

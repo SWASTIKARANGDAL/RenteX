@@ -1,0 +1,136 @@
+/* RenteX Main Stylesheet */
+
+/* ── Overrides for Bootstrap components ── */
+.btn { font-family: var(--rx-font-body); }
+.form-control, .form-select { font-family: var(--rx-font-body); }
+
+.dropdown-item {
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  margin: 2px 6px;
+  width: calc(100% - 12px);
+  transition: all 0.15s;
+}
+.dropdown-item:hover { background: var(--rx-gray); }
+.dropdown-menu { padding: 0.5rem; }
+
+/* ── Accordion ── */
+.accordion-button {
+  font-family: var(--rx-font-body);
+  font-weight: 600;
+}
+.accordion-button:not(.collapsed) { color: var(--rx-orange); background: rgba(255,92,0,0.04); box-shadow: none; }
+.accordion-button:focus { box-shadow: none; }
+
+/* ── Page transitions ── */
+main { animation: fadeInUp 0.3s ease both; }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--rx-orange); }
+
+/* ── Table ── */
+.table th { font-weight: 700; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--rx-mid); }
+.table > :not(caption) > * > * { padding: 0.85rem 1rem; }
+
+/* ── Breadcrumb ── */
+.breadcrumb-item + .breadcrumb-item::before { color: var(--rx-mid); }
+.breadcrumb-item.active { color: var(--rx-mid); }
+
+/* ── Loading spinner ── */
+.rx-spinner {
+  width: 40px; height: 40px;
+  border: 3px solid rgba(255,92,0,0.2);
+  border-top-color: var(--rx-orange);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Avatar placeholder ── */
+.avatar-placeholder {
+  background: linear-gradient(135deg, var(--rx-orange), #cc4a00);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--rx-font-display);
+  font-weight: 700;
+}
+
+/* ── Search highlight ── */
+mark { background: rgba(255,92,0,0.15); color: var(--rx-orange); border-radius: 3px; padding: 1px 3px; }
+
+/* ── Empty states ── */
+.empty-state {
+  text-align: center; padding: 4rem 2rem; color: var(--rx-mid);
+}
+.empty-state i { font-size: 3.5rem; display: block; margin-bottom: 1rem; opacity: 0.4; }
+.empty-state h4 { font-family: var(--rx-font-display); font-weight: 700; color: var(--rx-dark); margin-bottom: 0.5rem; }
+
+/* ── Print styles ── */
+@media print {
+  .rx-navbar, .rx-footer, .btn, nav { display: none !important; }
+  .rx-card { box-shadow: none; border: 1px solid #ddd; }
+  body { background: white; }
+}
+
+/* ── Mobile ── */
+@media (max-width: 576px) {
+  .rx-section-title { font-size: 1.6rem !important; }
+  .stat-card .stat-value { font-size: 1.6rem; }
+  .product-card .product-img-wrap { height: 180px; }
+}
+
+/* ── Flex utility ── */
+.flex-1 { flex: 1; }
+.gap-xs { gap: 0.25rem; }
+
+/* ── Image upload preview ── */
+.img-preview { max-width: 100%; border-radius: 8px; margin-top: 0.5rem; }
+
+/* ── Rating stars interactive ── */
+.star-input { display: flex; gap: 4px; }
+.star-input input { display: none; }
+.star-input label { font-size: 1.8rem; color: #D1D5DB; cursor: pointer; transition: color 0.1s; }
+.star-input input:checked ~ label,
+.star-input label:hover,
+.star-input label:hover ~ label { color: #F59E0B; }
+
+/* ── Price tag ── */
+.price-tag {
+  background: var(--rx-orange);
+  color: #fff;
+  font-family: var(--rx-font-display);
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+/* ── Verified badge ── */
+.verified-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: #D1FAE5; color: #065F46;
+  font-size: 0.72rem; font-weight: 700;
+  padding: 2px 8px; border-radius: 20px;
+}
+
+/* ── Category card ── */
+.category-card {
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.category-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+}
+
+/* ── Sticky header compensation ── */
+.page-section { scroll-margin-top: 90px; }

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Payment History – RenteX{% endblock %}
+
+{% block content %}
+<div class="rx-page-header"><div class="container"><h1>Payment History</h1></div></div>
+<div class="container py-5">
+  {% if payments %}
+  <div class="rx-card">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0" style="font-size:0.9rem;">
+        <thead style="background:var(--rx-gray);">
+          <tr>
+            <th style="padding:1rem;">Booking</th>
+            <th>Product</th>
+            <th>Gateway</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for payment in payments %}
+          <tr>
+            <td style="padding:1rem;font-weight:600;">#{{ payment.booking.booking_number }}</td>
+            <td>{{ payment.booking.product.name|truncatechars:25 }}</td>
+            <td><span class="rx-chip" style="font-size:0.78rem;">{{ payment.gateway|title }}</span></td>
+            <td><strong>₹{{ payment.amount }}</strong></td>
+            <td>
+              <span class="badge {% if payment.status == 'completed' %}bg-success{% elif payment.status == 'pending' %}bg-warning text-dark{% elif payment.status == 'failed' %}bg-danger{% else %}bg-secondary{% endif %}">
+                {{ payment.get_status_display }}
+              </span>
+            </td>
+            <td style="color:var(--rx-mid);">{{ payment.created_at|date:"d M Y" }}</td>
+            <td><a href="/bookings/{{ payment.booking.pk }}/" class="btn btn-sm" style="border-radius:8px;border:1.5px solid var(--rx-border);">View</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% else %}
+  <div style="text-align:center;padding:5rem 0;color:var(--rx-mid);">
+    <i class="bi bi-credit-card" style="font-size:4rem;display:block;margin-bottom:1rem;"></i>
+    <h4 style="font-family:'Syne',sans-serif;font-weight:700;">No payments yet</h4>
+    <a href="/products/" class="btn-rx-primary btn mt-2">Browse Products</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

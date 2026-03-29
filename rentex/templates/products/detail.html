@@ -1,0 +1,334 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.name }} – RenteX{% endblock %}
+
+{% block extra_css %}
+<style>
+.thumb-img { width:70px;height:55px;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:all 0.2s; }
+.thumb-img.active, .thumb-img:hover { border-color:var(--rx-orange); }
+.sticky-booking { position:sticky;top:80px; }
+.spec-row { display:flex;justify-content:space-between;padding:0.6rem 0;border-bottom:1px solid var(--rx-border);font-size:0.9rem; }
+.spec-row:last-child { border-bottom:none; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb rx-breadcrumb mb-0">
+      <li class="breadcrumb-item"><a href="/" style="color:var(--rx-orange);">Home</a></li>
+      <li class="breadcrumb-item"><a href="/products/" style="color:var(--rx-orange);">Browse</a></li>
+      <li class="breadcrumb-item"><a href="{{ product.category.get_absolute_url }}" style="color:var(--rx-orange);">{{ product.category.name }}</a></li>
+      <li class="breadcrumb-item active">{{ product.name|truncatechars:30 }}</li>
+    </ol>
+  </nav>
+
+  <div class="row g-5">
+
+    <!-- Left: Images & Details -->
+    <div class="col-lg-7">
+      <!-- Main image -->
+      <div style="border-radius:16px;overflow:hidden;background:#f5f5f0;margin-bottom:1rem;aspect-ratio:4/3;position:relative;">
+        <img id="mainImg" src="{% if product.primary_image %}{{ product.primary_image.image.url }}{% else %}/static/images/no-image.png{% endif %}"
+             alt="{{ product.name }}" style="width:100%;height:100%;object-fit:cover;"/>
+        {% if product.is_featured %}
+        <span style="position:absolute;top:16px;left:16px;background:var(--rx-orange);color:#fff;padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:700;">Featured</span>
+        {% endif %}
+        <!-- Wishlist -->
+        {% if user.is_authenticated %}
+        <button id="wishlistBtn" onclick="toggleWishlist('{{ product.slug }}')"
+                style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.95);border:none;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(0,0,0,0.15);cursor:pointer;transition:all 0.2s;">
+          <i class="bi bi-heart{% if in_wishlist %}-fill{% endif %}" style="font-size:1.2rem;{% if in_wishlist %}color:#ef4444;{% endif %}"></i>
+        </button>
+        {% endif %}
+      </div>
+      <!-- Thumbnails -->
+      {% if images.count > 1 %}
+      <div class="d-flex gap-2 flex-wrap">
+        {% for img in images %}
+        <img src="{{ img.image.url }}" alt="" class="thumb-img {% if img.is_primary %}active{% endif %}"
+             onclick="document.getElementById('mainImg').src='{{ img.image.url }}';document.querySelectorAll('.thumb-img').forEach(t=>t.classList.remove('active'));this.classList.add('active');"/>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- Product Info -->
+      <div class="mt-4">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <a href="{{ product.category.get_absolute_url }}" class="rx-chip" style="font-size:0.75rem;"><i class="{{ product.category.icon }}"></i>{{ product.category.name }}</a>
+          <span class="rx-chip" style="font-size:0.75rem;">{{ product.get_condition_display }}</span>
+        </div>
+        <h1 style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.9rem;line-height:1.2;margin-bottom:0.5rem;">{{ product.name }}</h1>
+
+        <!-- Rating -->
+        {% if product.avg_rating %}
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <div class="star-rating">
+            {% for i in "12345" %}
+              {% if forloop.counter <= product.avg_rating %}<i class="bi bi-star-fill"></i>{% else %}<i class="bi bi-star"></i>{% endif %}
+            {% endfor %}
+          </div>
+          <span style="font-weight:600;">{{ product.avg_rating }}</span>
+          <span style="color:var(--rx-mid);font-size:0.88rem;">({{ product.review_count }} review{{ product.review_count|pluralize }})</span>
+        </div>
+        {% endif %}
+
+        <div style="display:flex;align-items:center;gap:0.5rem;color:var(--rx-mid);font-size:0.9rem;margin-bottom:1.5rem;">
+          <i class="bi bi-geo-alt-fill text-orange"></i>{{ product.city }}, {{ product.state }}
+          <span style="margin:0 0.5rem;">·</span>
+          <i class="bi bi-eye text-orange"></i>{{ product.views_count }} views
+          <span style="margin:0 0.5rem;">·</span>
+          <i class="bi bi-clock text-orange"></i>Listed {{ product.created_at|timesince }} ago
+        </div>
+
+        <!-- Description -->
+        <div class="mb-4">
+          <h5 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:0.75rem;">About This Item</h5>
+          <p style="color:#444;line-height:1.8;white-space:pre-line;">{{ product.description }}</p>
+        </div>
+
+        <!-- Pricing breakdown -->
+        <div class="rx-card p-3 mb-4">
+          <h5 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1rem;font-size:1rem;">Pricing</h5>
+          <div class="row g-3 text-center">
+            <div class="col-4">
+              <div style="font-size:0.75rem;color:var(--rx-mid);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Per Day</div>
+              <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:var(--rx-orange);">₹{{ product.price_per_day }}</div>
+            </div>
+            {% if product.price_per_week %}
+            <div class="col-4" style="border-left:1px solid var(--rx-border);">
+              <div style="font-size:0.75rem;color:var(--rx-mid);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Per Week</div>
+              <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;">₹{{ product.price_per_week }}</div>
+            </div>
+            {% endif %}
+            {% if product.price_per_month %}
+            <div class="col-4" style="border-left:1px solid var(--rx-border);">
+              <div style="font-size:0.75rem;color:var(--rx-mid);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Per Month</div>
+              <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;">₹{{ product.price_per_month }}</div>
+            </div>
+            {% endif %}
+          </div>
+          {% if product.deposit_amount > 0 %}
+          <div style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--rx-border);font-size:0.85rem;color:var(--rx-mid);">
+            <i class="bi bi-info-circle me-1"></i>Refundable deposit: <strong>₹{{ product.deposit_amount }}</strong>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Specs -->
+        {% if specs %}
+        <div class="mb-4">
+          <h5 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:0.75rem;">Specifications</h5>
+          <div class="rx-card p-3">
+            {% for spec in specs %}
+            <div class="spec-row">
+              <span style="color:var(--rx-mid);font-weight:500;">{{ spec.key }}</span>
+              <span style="font-weight:600;">{{ spec.value }}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Owner info -->
+        <div class="rx-card p-3">
+          <h5 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1rem;font-size:1rem;">Listed By</h5>
+          <div class="d-flex align-items-center gap-3">
+            <img src="{{ product.owner.avatar_url }}" alt="" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid var(--rx-border);">
+            <div>
+              <div style="font-weight:700;">{{ product.owner.display_name }}</div>
+              <div style="font-size:0.82rem;color:var(--rx-mid);">
+                <i class="bi bi-geo-alt me-1"></i>{{ product.owner.city|default:"India" }}
+                {% if product.owner.get_avg_rating %}· ⭐ {{ product.owner.get_avg_rating }}{% endif %}
+              </div>
+            </div>
+            <a href="/accounts/profile/{{ product.owner.pk }}/" class="btn-rx-outline btn btn-sm ms-auto">View Profile</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reviews -->
+      <div class="mt-5">
+        <h4 style="font-family:'Syne',sans-serif;font-weight:800;margin-bottom:1.5rem;">Reviews ({{ reviews.count }})</h4>
+        {% for review in reviews %}
+        <div class="rx-card p-3 mb-3">
+          <div class="d-flex align-items-center gap-3 mb-2">
+            <img src="{{ review.reviewer.avatar_url }}" alt="" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+            <div>
+              <div style="font-weight:600;font-size:0.9rem;">{{ review.reviewer.display_name }}</div>
+              <div style="font-size:0.78rem;color:var(--rx-mid);">{{ review.created_at|date:"M d, Y" }}</div>
+            </div>
+            <div class="star-rating ms-auto" style="font-size:0.9rem;">
+              {% for i in "12345" %}{% if forloop.counter <= review.rating %}<i class="bi bi-star-fill"></i>{% else %}<i class="bi bi-star"></i>{% endif %}{% endfor %}
+            </div>
+          </div>
+          {% if review.title %}<div style="font-weight:600;margin-bottom:0.3rem;">{{ review.title }}</div>{% endif %}
+          <p style="margin:0;color:#444;font-size:0.9rem;">{{ review.comment }}</p>
+        </div>
+        {% empty %}
+        <div style="text-align:center;padding:3rem;color:var(--rx-mid);">
+          <i class="bi bi-star" style="font-size:2.5rem;display:block;margin-bottom:0.75rem;"></i>
+          <p>No reviews yet. Be the first to rent and review!</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Right: Booking Widget -->
+    <div class="col-lg-5">
+      <div class="sticky-booking">
+        <div class="rx-card p-4">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;margin-bottom:0.3rem;">₹{{ product.price_per_day }}<span style="font-size:1rem;font-weight:400;color:var(--rx-mid);">/day</span></div>
+          <div class="star-rating" style="margin-bottom:1.5rem;">
+            {% if product.avg_rating %}
+              {% for i in "12345" %}{% if forloop.counter <= product.avg_rating %}<i class="bi bi-star-fill"></i>{% else %}<i class="bi bi-star"></i>{% endif %}{% endfor %}
+              <span style="color:var(--rx-mid);font-size:0.85rem;margin-left:4px;">{{ product.avg_rating }} · {{ product.review_count }} reviews</span>
+            {% else %}
+              <span style="color:var(--rx-mid);font-size:0.85rem;">No reviews yet</span>
+            {% endif %}
+          </div>
+
+          {% if user.is_authenticated %}
+          <form action="/bookings/create/{{ product.slug }}/" method="post" id="bookingForm" class="rx-form">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label>Start Date</label>
+              <input type="date" name="start_date" id="startDate" class="form-control" required
+                     min="{{ today }}" value="{{ today|date:'Y-m-d' }}"
+                     onchange="calculatePrice()"/>
+            </div>
+            <div class="mb-3">
+              <label>End Date</label>
+              <input type="date" name="end_date" id="endDate" class="form-control" required
+                     min="{{ today }}" onchange="calculatePrice()"/>
+            </div>
+            <div class="mb-3">
+              <label>Note to Owner <span style="font-weight:400;color:var(--rx-mid);">(optional)</span></label>
+              <textarea name="renter_note" class="form-control" rows="2" placeholder="Any special requests..."></textarea>
+            </div>
+
+            <!-- Price breakdown -->
+            <div id="priceBreakdown" style="background:var(--rx-gray);border-radius:12px;padding:1rem;margin-bottom:1rem;display:none;">
+              <div class="spec-row"><span>Rental (<span id="numDays">-</span> days)</span><span>₹<span id="rentalAmt">-</span></span></div>
+              {% if product.deposit_amount > 0 %}
+              <div class="spec-row"><span>Refundable Deposit</span><span>₹{{ product.deposit_amount }}</span></div>
+              {% endif %}
+              <div class="spec-row" style="border-bottom:none;font-weight:700;"><span>Total</span><span style="color:var(--rx-orange);">₹<span id="totalAmt">-</span></span></div>
+            </div>
+
+            <div id="availabilityMsg" class="mb-2" style="font-size:0.85rem;"></div>
+
+            {% if product.owner != user %}
+            <button type="submit" class="btn-rx-primary btn w-100 btn-lg" id="bookBtn">
+              <i class="bi bi-calendar-check me-2"></i>Request to Book
+            </button>
+            {% endif %}
+          </form>
+          {% else %}
+          <a href="/accounts/login/?next={{ request.path }}" class="btn-rx-primary btn w-100 btn-lg">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Login to Book
+          </a>
+          {% endif %}
+
+          <div class="d-flex justify-content-center gap-4 mt-3 pt-3" style="border-top:1px solid var(--rx-border);">
+            <span style="font-size:0.78rem;color:var(--rx-mid);text-align:center;"><i class="bi bi-shield-check" style="color:var(--rx-orange);display:block;font-size:1.2rem;"></i>Secure</span>
+            <span style="font-size:0.78rem;color:var(--rx-mid);text-align:center;"><i class="bi bi-arrow-counterclockwise" style="color:var(--rx-orange);display:block;font-size:1.2rem;"></i>Refundable</span>
+            <span style="font-size:0.78rem;color:var(--rx-mid);text-align:center;"><i class="bi bi-headset" style="color:var(--rx-orange);display:block;font-size:1.2rem;"></i>Support</span>
+          </div>
+        </div>
+
+        <!-- Owner actions -->
+        {% if user == product.owner %}
+        <div class="rx-card p-3 mt-3">
+          <div style="font-weight:600;margin-bottom:0.75rem;">Owner Actions</div>
+          <div class="d-flex gap-2">
+            <a href="/products/{{ product.slug }}/edit/" class="btn-rx-outline btn flex-1"><i class="bi bi-pencil me-1"></i>Edit</a>
+            <a href="/products/{{ product.slug }}/delete/" class="btn btn-outline-danger flex-1" style="border-radius:10px;"><i class="bi bi-trash me-1"></i>Delete</a>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Related Products -->
+  {% if related %}
+  <div class="mt-5 pt-4 border-top">
+    <h4 style="font-family:'Syne',sans-serif;font-weight:800;margin-bottom:1.5rem;">Similar Products</h4>
+    <div class="row g-4">
+      {% for p in related %}
+      <div class="col-sm-6 col-lg-3">
+        {% include 'partials/product_card.html' with product=p %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const productId = '{{ product.id }}';
+const depositAmount = {{ product.deposit_amount }};
+
+function calculatePrice() {
+  const start = document.getElementById('startDate').value;
+  const end = document.getElementById('endDate').value;
+  if (!start || !end) return;
+
+  fetch(`/bookings/calculate-price/?product_id=${productId}&start_date=${start}&end_date=${end}`)
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) return;
+      document.getElementById('numDays').textContent = data.days;
+      document.getElementById('rentalAmt').textContent = data.rental_amount.toFixed(0);
+      document.getElementById('totalAmt').textContent = data.total_amount.toFixed(0);
+      document.getElementById('priceBreakdown').style.display = 'block';
+
+      const msg = document.getElementById('availabilityMsg');
+      const btn = document.getElementById('bookBtn');
+      if (data.available) {
+        msg.innerHTML = '<span style="color:#10B981;"><i class="bi bi-check-circle me-1"></i>Available for selected dates!</span>';
+        if(btn) btn.disabled = false;
+      } else {
+        msg.innerHTML = '<span style="color:#EF4444;"><i class="bi bi-x-circle me-1"></i>Not available for these dates. Please choose different dates.</span>';
+        if(btn) btn.disabled = true;
+      }
+    });
+}
+
+function toggleWishlist(slug) {
+  fetch(`/products/${slug}/wishlist/`, {
+    method: 'POST',
+    headers: {'X-CSRFToken': '{{ csrf_token }}'}
+  })
+  .then(r => r.json())
+  .then(data => {
+    const btn = document.getElementById('wishlistBtn');
+    const icon = btn.querySelector('i');
+    if (data.status === 'added') {
+      icon.className = 'bi bi-heart-fill';
+      icon.style.color = '#ef4444';
+    } else {
+      icon.className = 'bi bi-heart';
+      icon.style.color = '';
+    }
+  });
+}
+
+// Set min end date when start date changes
+document.getElementById('startDate')?.addEventListener('change', function() {
+  const endDate = document.getElementById('endDate');
+  endDate.min = this.value;
+  if (endDate.value && endDate.value <= this.value) {
+    const d = new Date(this.value);
+    d.setDate(d.getDate() + 1);
+    endDate.value = d.toISOString().split('T')[0];
+  }
+  calculatePrice();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Payment Successful – RenteX{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-6 text-center">
+      <div class="rx-card p-5">
+        <div style="width:80px;height:80px;background:#D1FAE5;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;font-size:2.5rem;">✅</div>
+        <h2 style="font-family:'Syne',sans-serif;font-weight:800;margin-bottom:0.5rem;">Payment Successful!</h2>
+        <p style="color:var(--rx-mid);margin-bottom:2rem;">Your booking <strong>#{{ booking.booking_number }}</strong> is confirmed.</p>
+
+        <div style="background:var(--rx-gray);border-radius:12px;padding:1.5rem;text-align:left;margin-bottom:2rem;">
+          <div style="font-weight:700;margin-bottom:1rem;">Booking Summary</div>
+          <div style="font-size:0.9rem;display:flex;flex-direction:column;gap:0.5rem;">
+            <div class="d-flex justify-content-between"><span style="color:var(--rx-mid);">Product</span><span>{{ booking.product.name }}</span></div>
+            <div class="d-flex justify-content-between"><span style="color:var(--rx-mid);">Dates</span><span>{{ booking.start_date }} → {{ booking.end_date }}</span></div>
+            <div class="d-flex justify-content-between"><span style="color:var(--rx-mid);">Amount Paid</span><span style="font-weight:700;color:var(--rx-orange);">₹{{ payment.amount }}</span></div>
+          </div>
+        </div>
+
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+          <a href="/bookings/{{ booking.pk }}/" class="btn-rx-primary btn">View Booking</a>
+          <a href="/bookings/{{ booking.pk }}/invoice/" class="btn-rx-outline btn" target="_blank">Download Invoice</a>
+          <a href="/products/" class="btn btn-outline-secondary" style="border-radius:10px;">Browse More</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

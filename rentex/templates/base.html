@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}RenteX – Rent Electronics Smarter{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}Rent laptops, cameras, phones, gaming consoles and more from trusted owners near you.{% endblock %}"/>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet"/>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+
+  <link rel="stylesheet" href="/static/css/main.css"/>
+  {% block extra_css %}{% endblock %}
+
+  <style>
+    :root {
+      --rx-orange: #FF5C00;
+      --rx-orange-light: #FF7A2E;
+      --rx-dark: #0D0D0D;
+      --rx-charcoal: #1A1A1A;
+      --rx-gray: #F5F5F0;
+      --rx-mid: #6B7280;
+      --rx-border: #E5E5E0;
+      --rx-success: #10B981;
+      --rx-warning: #F59E0B;
+      --rx-danger: #EF4444;
+      --rx-info: #3B82F6;
+      --rx-font-display: 'Syne', sans-serif;
+      --rx-font-body: 'DM Sans', sans-serif;
+      --rx-radius: 12px;
+      --rx-radius-lg: 20px;
+      --rx-shadow: 0 4px 24px rgba(0,0,0,0.07);
+      --rx-shadow-lg: 0 12px 48px rgba(0,0,0,0.12);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--rx-font-body);
+      color: var(--rx-dark);
+      background: #FAFAF8;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1,h2,h3,h4,h5,h6,.display-font { font-family: var(--rx-font-display); font-weight: 700; }
+
+    /* ── Navbar ── */
+    .rx-navbar {
+      background: rgba(255,255,255,0.97);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--rx-border);
+      padding: 0.75rem 0;
+      position: sticky; top: 0; z-index: 1030;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+    }
+    .rx-navbar .navbar-brand {
+      font-family: var(--rx-font-display);
+      font-size: 1.6rem; font-weight: 800;
+      color: var(--rx-dark) !important;
+      letter-spacing: -0.03em;
+    }
+    .rx-navbar .navbar-brand span { color: var(--rx-orange); }
+    .rx-navbar .nav-link {
+      font-weight: 500; color: #444 !important;
+      padding: 0.4rem 0.8rem !important;
+      border-radius: 8px;
+      transition: all 0.15s;
+    }
+    .rx-navbar .nav-link:hover { background: var(--rx-gray); color: var(--rx-dark) !important; }
+    .rx-navbar .nav-link.active { color: var(--rx-orange) !important; }
+
+    /* ── Buttons ── */
+    .btn-rx-primary {
+      background: var(--rx-orange); color: #fff; border: none;
+      font-weight: 600; border-radius: 10px; padding: 0.6rem 1.4rem;
+      transition: all 0.2s; font-family: var(--rx-font-body);
+    }
+    .btn-rx-primary:hover { background: var(--rx-orange-light); color: #fff; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(255,92,0,0.3); }
+    .btn-rx-outline {
+      border: 2px solid var(--rx-orange); color: var(--rx-orange); background: transparent;
+      font-weight: 600; border-radius: 10px; padding: 0.55rem 1.35rem; transition: all 0.2s;
+    }
+    .btn-rx-outline:hover { background: var(--rx-orange); color: #fff; }
+    .btn-rx-dark {
+      background: var(--rx-dark); color: #fff; border: none;
+      font-weight: 600; border-radius: 10px; padding: 0.6rem 1.4rem; transition: all 0.2s;
+    }
+    .btn-rx-dark:hover { background: #333; color: #fff; transform: translateY(-1px); }
+
+    /* ── Cards ── */
+    .rx-card {
+      background: #fff; border-radius: var(--rx-radius); border: 1px solid var(--rx-border);
+      box-shadow: var(--rx-shadow); transition: all 0.25s; overflow: hidden;
+    }
+    .rx-card:hover { box-shadow: var(--rx-shadow-lg); transform: translateY(-3px); }
+
+    /* ── Product Card ── */
+    .product-card { text-decoration: none; color: inherit; display: block; }
+    .product-card .product-img-wrap {
+      position: relative; overflow: hidden; height: 220px; background: var(--rx-gray);
+    }
+    .product-card .product-img-wrap img {
+      width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s;
+    }
+    .product-card:hover .product-img-wrap img { transform: scale(1.05); }
+    .product-card .product-badge {
+      position: absolute; top: 12px; left: 12px;
+      background: var(--rx-orange); color: #fff;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 20px;
+    }
+    .product-card .product-body { padding: 1rem 1.1rem 1.2rem; }
+    .product-card .product-category { font-size: 0.75rem; font-weight: 600; color: var(--rx-orange); text-transform: uppercase; letter-spacing: 0.05em; }
+    .product-card .product-name { font-family: var(--rx-font-display); font-size: 1rem; font-weight: 700; margin: 0.2rem 0 0.4rem; line-height: 1.3; }
+    .product-card .product-price { font-size: 1.1rem; font-weight: 700; color: var(--rx-dark); }
+    .product-card .product-price span { font-size: 0.8rem; font-weight: 400; color: var(--rx-mid); }
+    .product-card .product-meta { font-size: 0.8rem; color: var(--rx-mid); }
+    .star-rating { color: #F59E0B; font-size: 0.85rem; }
+
+    /* ── Badge tweaks ── */
+    .badge-orange { background: var(--rx-orange); }
+    .status-pending { background: #FEF3C7; color: #92400E; }
+    .status-confirmed { background: #DBEAFE; color: #1E40AF; }
+    .status-active { background: #D1FAE5; color: #065F46; }
+    .status-completed { background: #D1FAE5; color: #065F46; }
+    .status-rejected, .status-cancelled { background: #FEE2E2; color: #991B1B; }
+
+    /* ── Dashboard sidebar ── */
+    .dash-sidebar {
+      background: var(--rx-dark); min-height: calc(100vh - 70px);
+      padding: 1.5rem 0; position: sticky; top: 70px;
+    }
+    .dash-sidebar .nav-link {
+      color: rgba(255,255,255,0.65) !important; border-radius: 0;
+      padding: 0.7rem 1.5rem !important; display: flex; align-items: center; gap: 0.7rem;
+      font-weight: 500; transition: all 0.15s;
+    }
+    .dash-sidebar .nav-link:hover, .dash-sidebar .nav-link.active {
+      background: rgba(255,92,0,0.15); color: #fff !important; border-left: 3px solid var(--rx-orange);
+    }
+    .dash-sidebar .nav-link i { font-size: 1.1rem; width: 20px; }
+
+    /* ── Stat card ── */
+    .stat-card {
+      background: #fff; border-radius: var(--rx-radius); padding: 1.5rem;
+      border: 1px solid var(--rx-border); box-shadow: var(--rx-shadow);
+    }
+    .stat-card .stat-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center; font-size: 1.4rem;
+    }
+    .stat-card .stat-value { font-family: var(--rx-font-display); font-size: 2rem; font-weight: 800; }
+    .stat-card .stat-label { font-size: 0.85rem; color: var(--rx-mid); font-weight: 500; }
+
+    /* ── Forms ── */
+    .rx-form .form-control, .rx-form .form-select {
+      border: 1.5px solid var(--rx-border); border-radius: 10px;
+      padding: 0.6rem 0.9rem; font-family: var(--rx-font-body); transition: border-color 0.2s;
+    }
+    .rx-form .form-control:focus, .rx-form .form-select:focus {
+      border-color: var(--rx-orange); box-shadow: 0 0 0 3px rgba(255,92,0,0.1);
+    }
+    .rx-form label { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.35rem; }
+
+    /* ── Alerts ── */
+    .rx-alert { border-radius: 12px; border: none; font-weight: 500; }
+
+    /* ── Section headings ── */
+    .rx-section-title { font-family: var(--rx-font-display); font-weight: 800; }
+    .rx-section-eyebrow {
+      font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--rx-orange);
+    }
+
+    /* ── Footer ── */
+    .rx-footer {
+      background: var(--rx-dark); color: rgba(255,255,255,0.7);
+      padding: 4rem 0 2rem;
+    }
+    .rx-footer h5 { color: #fff; font-family: var(--rx-font-display); font-weight: 700; }
+    .rx-footer a { color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.15s; font-size: 0.9rem; }
+    .rx-footer a:hover { color: var(--rx-orange); }
+    .rx-footer .footer-brand { font-family: var(--rx-font-display); font-size: 1.8rem; font-weight: 800; color: #fff; }
+    .rx-footer .footer-brand span { color: var(--rx-orange); }
+    .rx-footer hr { border-color: rgba(255,255,255,0.1); }
+
+    /* ── Toast notifications ── */
+    .toast-container { position: fixed; top: 80px; right: 1rem; z-index: 9999; }
+
+    /* ── Breadcrumb ── */
+    .rx-breadcrumb { background: var(--rx-gray); border-radius: 10px; padding: 0.6rem 1rem; font-size: 0.85rem; }
+
+    /* ── Tag/chip ── */
+    .rx-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: var(--rx-gray); border: 1px solid var(--rx-border);
+      border-radius: 20px; padding: 3px 12px; font-size: 0.8rem; font-weight: 500; color: #444;
+    }
+    .rx-chip:hover { background: var(--rx-orange); color: #fff; border-color: var(--rx-orange); text-decoration: none; }
+
+    /* ── Page header ── */
+    .rx-page-header {
+      background: linear-gradient(135deg, var(--rx-dark) 0%, #2d1a0e 100%);
+      color: #fff; padding: 3rem 0;
+    }
+    .rx-page-header h1 { font-family: var(--rx-font-display); font-weight: 800; }
+
+    /* ── Utility ── */
+    .text-orange { color: var(--rx-orange) !important; }
+    .bg-orange { background: var(--rx-orange) !important; }
+    .border-orange { border-color: var(--rx-orange) !important; }
+    .cursor-pointer { cursor: pointer; }
+
+    @media (max-width: 768px) {
+      .dash-sidebar { min-height: auto; position: static; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Navbar ── -->
+<nav class="rx-navbar navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand" href="/">Rente<span>X</span></a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMain">
+      <ul class="navbar-nav me-auto gap-1">
+        <li class="nav-item"><a class="nav-link" href="/products/">Browse</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Categories</a>
+          <ul class="dropdown-menu border-0 shadow-lg rounded-3">
+            {% for cat in categories %}
+            <li><a class="dropdown-item" href="{{ cat.get_absolute_url }}"><i class="{{ cat.icon }} me-2 text-orange"></i>{{ cat.name }}</a></li>
+            {% endfor %}
+          </ul>
+        </li>
+        <li class="nav-item"><a class="nav-link" href="/how-it-works/">How It Works</a></li>
+      </ul>
+
+      <div class="d-flex align-items-center gap-2">
+        {% if user.is_authenticated %}
+          <!-- Notifications bell -->
+          <a href="/notifications/" class="btn btn-sm position-relative" style="color:#444; padding:0.4rem 0.6rem;">
+            <i class="bi bi-bell fs-5"></i>
+            {% if unread_notifications_count %}
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size:0.65rem;">
+              {{ unread_notifications_count }}
+            </span>
+            {% endif %}
+          </a>
+          <!-- User dropdown -->
+          <div class="dropdown">
+            <button class="btn btn-sm dropdown-toggle d-flex align-items-center gap-2" style="border:1.5px solid var(--rx-border); border-radius:10px; padding:0.4rem 0.8rem;" data-bs-toggle="dropdown">
+              <img src="{{ user.avatar_url }}" alt="" width="28" height="28" style="border-radius:50%; object-fit:cover;">
+              <span style="font-weight:600; font-size:0.9rem;">{{ user.display_name|truncatechars:15 }}</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-3" style="min-width:200px;">
+              <li><a class="dropdown-item" href="/accounts/dashboard/"><i class="bi bi-grid me-2"></i>Dashboard</a></li>
+              <li><a class="dropdown-item" href="/accounts/profile/"><i class="bi bi-person me-2"></i>Profile</a></li>
+              {% if user.is_owner %}
+              <li><a class="dropdown-item" href="/products/create/"><i class="bi bi-plus-circle me-2"></i>List Product</a></li>
+              <li><a class="dropdown-item" href="/products/my/"><i class="bi bi-box me-2"></i>My Listings</a></li>
+              {% endif %}
+              <li><a class="dropdown-item" href="/bookings/"><i class="bi bi-calendar me-2"></i>Bookings</a></li>
+              <li><a class="dropdown-item" href="/products/wishlist/"><i class="bi bi-heart me-2"></i>Wishlist</a></li>
+              <li><a class="dropdown-item" href="/payments/history/"><i class="bi bi-credit-card me-2"></i>Payments</a></li>
+              <li><hr class="dropdown-divider"/></li>
+              {% if user.is_staff %}
+              <li><a class="dropdown-item" href="/admin/"><i class="bi bi-shield me-2"></i>Admin Panel</a></li>
+              <li><hr class="dropdown-divider"/></li>
+              {% endif %}
+              <li>
+                <form method="post" action="/accounts/logout/" style="margin:0;">
+                  {% csrf_token %}
+                  <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-2"></i>Sign Out</button>
+                </form>
+              </li>
+            </ul>
+          </div>
+        {% else %}
+          <a href="/accounts/login/" class="btn-rx-outline btn">Log In</a>
+          <a href="/accounts/signup/" class="btn-rx-primary btn">Sign Up Free</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Messages ── -->
+{% if messages %}
+<div class="toast-container">
+  {% for message in messages %}
+  <div class="toast align-items-center text-white border-0 show mb-2
+    {% if message.tags == 'success' %}bg-success
+    {% elif message.tags == 'error' %}bg-danger
+    {% elif message.tags == 'warning' %}bg-warning text-dark
+    {% else %}bg-info{% endif %}
+    " role="alert" style="border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.15);">
+    <div class="d-flex">
+      <div class="toast-body fw-500">{{ message }}</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- ── Main content ── -->
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<!-- ── Footer ── -->
+<footer class="rx-footer">
+  <div class="container">
+    <div class="row g-4 mb-4">
+      <div class="col-lg-4">
+        <div class="footer-brand mb-3">Rente<span>X</span></div>
+        <p style="font-size:0.9rem; line-height:1.7; max-width:280px;">Rent electronics from trusted owners in your city. Laptops, cameras, phones, consoles and more.</p>
+        <div class="d-flex gap-3 mt-3">
+          <a href="#"><i class="bi bi-twitter-x fs-5"></i></a>
+          <a href="#"><i class="bi bi-instagram fs-5"></i></a>
+          <a href="#"><i class="bi bi-linkedin fs-5"></i></a>
+          <a href="#"><i class="bi bi-youtube fs-5"></i></a>
+        </div>
+      </div>
+      <div class="col-6 col-lg-2">
+        <h5 class="mb-3" style="font-size:0.95rem;">Browse</h5>
+        <ul class="list-unstyled d-flex flex-column gap-2">
+          <li><a href="/products/">All Products</a></li>
+          <li><a href="/products/category/laptops/">Laptops</a></li>
+          <li><a href="/products/category/cameras/">Cameras</a></li>
+          <li><a href="/products/category/phones/">Phones</a></li>
+          <li><a href="/products/category/gaming/">Gaming</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-lg-2">
+        <h5 class="mb-3" style="font-size:0.95rem;">Company</h5>
+        <ul class="list-unstyled d-flex flex-column gap-2">
+          <li><a href="/about/">About Us</a></li>
+          <li><a href="/how-it-works/">How It Works</a></li>
+          <li><a href="/contact/">Contact</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Careers</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-lg-2">
+        <h5 class="mb-3" style="font-size:0.95rem;">Support</h5>
+        <ul class="list-unstyled d-flex flex-column gap-2">
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Safety</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-lg-2">
+        <h5 class="mb-3" style="font-size:0.95rem;">List & Earn</h5>
+        <ul class="list-unstyled d-flex flex-column gap-2">
+          <li><a href="/accounts/signup/">Become an Owner</a></li>
+          <li><a href="/products/create/">List a Product</a></li>
+          <li><a href="#">Owner Guide</a></li>
+          <li><a href="#">Pricing Guide</a></li>
+        </ul>
+      </div>
+    </div>
+    <hr/>
+    <div class="d-flex flex-wrap justify-content-between align-items-center pt-2" style="font-size:0.82rem;">
+      <span>© 2025 RenteX Technologies Pvt. Ltd. All rights reserved.</span>
+      <span class="d-flex gap-3 mt-2 mt-md-0">
+        <span><i class="bi bi-shield-check me-1 text-orange"></i>Secure Payments</span>
+        <span><i class="bi bi-star-fill me-1 text-orange"></i>Verified Owners</span>
+        <span><i class="bi bi-headset me-1 text-orange"></i>24/7 Support</span>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Auto-dismiss toasts
+  document.querySelectorAll('.toast').forEach(t => {
+    const toast = new bootstrap.Toast(t, {delay: 4000});
+    toast.show();
+  });
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

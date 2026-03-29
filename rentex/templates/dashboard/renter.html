@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% block title %}My Dashboard – RenteX{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+  <div class="row g-0">
+
+    <!-- Sidebar -->
+    <div class="col-lg-2 dash-sidebar">
+      <div class="px-3 mb-3">
+        <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:1rem;">
+          <img src="{{ user.avatar_url }}" alt="" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,92,0,0.5);" class="mb-2"/>
+          <div style="color:#fff;font-weight:700;font-size:0.9rem;">{{ user.display_name }}</div>
+          <div style="color:rgba(255,255,255,0.5);font-size:0.75rem;"><i class="bi bi-person me-1"></i>Renter Account</div>
+        </div>
+      </div>
+      <nav class="nav flex-column">
+        <a class="nav-link active" href="/accounts/dashboard/"><i class="bi bi-grid"></i>Dashboard</a>
+        <a class="nav-link" href="/products/"><i class="bi bi-search"></i>Browse</a>
+        <a class="nav-link" href="/bookings/"><i class="bi bi-calendar"></i>My Bookings</a>
+        <a class="nav-link" href="/products/wishlist/"><i class="bi bi-heart"></i>Wishlist</a>
+        <a class="nav-link" href="/payments/history/"><i class="bi bi-credit-card"></i>Payments</a>
+        <a class="nav-link" href="/notifications/"><i class="bi bi-bell"></i>Notifications
+          {% if unread_notifications_count %}<span class="badge bg-danger ms-1">{{ unread_notifications_count }}</span>{% endif %}
+        </a>
+        <a class="nav-link" href="/accounts/profile/"><i class="bi bi-person"></i>Profile</a>
+      </nav>
+    </div>
+
+    <!-- Main -->
+    <div class="col-lg-10" style="background:#FAFAF8;min-height:calc(100vh - 70px);">
+      <div class="p-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+          <div>
+            <h2 style="font-family:'Syne',sans-serif;font-weight:800;margin-bottom:0.2rem;">My Dashboard</h2>
+            <p style="color:var(--rx-mid);margin:0;font-size:0.9rem;">Welcome back, {{ user.display_name }}!</p>
+          </div>
+          <a href="/products/" class="btn-rx-primary btn"><i class="bi bi-search me-2"></i>Browse Electronics</a>
+        </div>
+
+        <!-- Stats -->
+        <div class="row g-4 mb-4">
+          <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+              <div class="stat-icon mb-3" style="background:rgba(255,92,0,0.1);"><i class="bi bi-calendar-check" style="color:var(--rx-orange);"></i></div>
+              <div class="stat-value">{{ total_bookings }}</div>
+              <div class="stat-label">Total Bookings</div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+              <div class="stat-icon mb-3" style="background:rgba(59,130,246,0.1);"><i class="bi bi-clock" style="color:#3B82F6;"></i></div>
+              <div class="stat-value">{{ active_bookings.count }}</div>
+              <div class="stat-label">Active Rentals</div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+              <div class="stat-icon mb-3" style="background:rgba(16,185,129,0.1);"><i class="bi bi-check-circle" style="color:#10B981;"></i></div>
+              <div class="stat-value">{{ completed_bookings.count }}</div>
+              <div class="stat-label">Completed</div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+              <div class="stat-icon mb-3" style="background:rgba(245,158,11,0.1);"><i class="bi bi-currency-rupee" style="color:#F59E0B;"></i></div>
+              <div class="stat-value">₹{{ total_spent|floatformat:0 }}</div>
+              <div class="stat-label">Total Spent</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-4">
+
+          <!-- Active/Pending bookings -->
+          <div class="col-lg-8">
+            <div class="rx-card p-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 style="font-family:'Syne',sans-serif;font-weight:700;margin:0;">My Bookings</h5>
+                <a href="/bookings/" style="color:var(--rx-orange);font-size:0.85rem;">View All</a>
+              </div>
+              {% for booking in bookings %}
+              <div class="d-flex align-items-center gap-3 py-3 border-bottom">
+                {% if booking.product.primary_image %}
+                <img src="{{ booking.product.primary_image.image.url }}" alt="" style="width:60px;height:60px;border-radius:12px;object-fit:cover;flex-shrink:0;"/>
+                {% else %}
+                <div style="width:60px;height:60px;border-radius:12px;background:var(--rx-gray);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-box"></i></div>
+                {% endif %}
+                <div style="flex:1;min-width:0;">
+                  <div style="font-weight:700;font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ booking.product.name }}</div>
+                  <div style="font-size:0.8rem;color:var(--rx-mid);">{{ booking.start_date }} → {{ booking.end_date }} · {{ booking.duration_days }} day{{ booking.duration_days|pluralize }}</div>
+                  <div style="font-size:0.8rem;"><i class="bi bi-person me-1"></i>{{ booking.product.owner.display_name }}</div>
+                </div>
+                <div class="text-end flex-shrink-0">
+                  <div style="font-weight:700;color:var(--rx-orange);">₹{{ booking.total_amount }}</div>
+                  <span class="badge status-{{ booking.status }}" style="font-size:0.72rem;">{{ booking.get_status_display }}</span>
+                  <div class="mt-1">
+                    <a href="/bookings/{{ booking.pk }}/" class="btn btn-sm" style="border-radius:8px;border:1.5px solid var(--rx-border);font-size:0.78rem;">View</a>
+                    {% if booking.status == 'confirmed' %}
+                    <a href="/payments/checkout/{{ booking.pk }}/" class="btn btn-sm btn-rx-primary" style="font-size:0.78rem;">Pay Now</a>
+                    {% endif %}
+                    {% if booking.status == 'completed' and not booking.review %}
+                    <a href="/reviews/create/{{ booking.pk }}/" class="btn btn-sm" style="border-radius:8px;border:1.5px solid var(--rx-orange);color:var(--rx-orange);font-size:0.78rem;">Review</a>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              {% empty %}
+              <div style="text-align:center;padding:3rem;color:var(--rx-mid);">
+                <i class="bi bi-calendar-x" style="font-size:3rem;display:block;margin-bottom:1rem;"></i>
+                <p>You haven't made any bookings yet.</p>
+                <a href="/products/" class="btn-rx-primary btn">Start Browsing</a>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Quick links -->
+          <div class="col-lg-4">
+            <div class="rx-card p-4 mb-4">
+              <h6 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1rem;">Quick Actions</h6>
+              <div class="d-flex flex-column gap-2">
+                <a href="/products/" class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:var(--rx-gray);text-decoration:none;color:inherit;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,92,0,0.08)'" onmouseout="this.style.background='var(--rx-gray)'">
+                  <i class="bi bi-search" style="color:var(--rx-orange);font-size:1.2rem;"></i>
+                  <div><div style="font-weight:600;font-size:0.9rem;">Browse Electronics</div><div style="font-size:0.78rem;color:var(--rx-mid);">Find your next rental</div></div>
+                </a>
+                <a href="/bookings/" class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:var(--rx-gray);text-decoration:none;color:inherit;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,92,0,0.08)'" onmouseout="this.style.background='var(--rx-gray)'">
+                  <i class="bi bi-calendar" style="color:var(--rx-orange);font-size:1.2rem;"></i>
+                  <div><div style="font-weight:600;font-size:0.9rem;">All Bookings</div><div style="font-size:0.78rem;color:var(--rx-mid);">View full history</div></div>
+                </a>
+                <a href="/products/wishlist/" class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:var(--rx-gray);text-decoration:none;color:inherit;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,92,0,0.08)'" onmouseout="this.style.background='var(--rx-gray)'">
+                  <i class="bi bi-heart" style="color:var(--rx-orange);font-size:1.2rem;"></i>
+                  <div><div style="font-weight:600;font-size:0.9rem;">Wishlist</div><div style="font-size:0.78rem;color:var(--rx-mid);">Saved items</div></div>
+                </a>
+                <a href="/payments/history/" class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:var(--rx-gray);text-decoration:none;color:inherit;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,92,0,0.08)'" onmouseout="this.style.background='var(--rx-gray)'">
+                  <i class="bi bi-credit-card" style="color:var(--rx-orange);font-size:1.2rem;"></i>
+                  <div><div style="font-weight:600;font-size:0.9rem;">Payment History</div><div style="font-size:0.78rem;color:var(--rx-mid);">View all transactions</div></div>
+                </a>
+              </div>
+            </div>
+
+            <div class="rx-card p-4" style="background:linear-gradient(135deg,var(--rx-orange),#cc4a00);color:#fff;border:none;">
+              <h6 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:0.5rem;">Have Electronics?</h6>
+              <p style="font-size:0.85rem;opacity:0.9;margin-bottom:1rem;">Switch to owner account and start earning by renting out your gear.</p>
+              <a href="/accounts/signup/?role=owner" class="btn btn-light btn-sm" style="font-weight:700;border-radius:8px;color:var(--rx-orange);">Become an Owner</a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

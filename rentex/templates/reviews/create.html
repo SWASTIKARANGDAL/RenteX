@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Write a Review – RenteX{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <div class="rx-card p-5">
+        <h2 style="font-family:'Syne',sans-serif;font-weight:800;margin-bottom:0.5rem;">Write a Review</h2>
+        <p style="color:var(--rx-mid);margin-bottom:2rem;">For: <strong>{{ booking.product.name }}</strong></p>
+
+        <form method="post" class="rx-form">
+          {% csrf_token %}
+          <div class="mb-4">
+            <label class="form-label">Your Rating</label>
+            <div class="d-flex gap-2 mb-2" id="starRating">
+              {% for i in "12345" %}
+              <button type="button" class="star-btn" data-value="{{ forloop.counter }}" onclick="setRating({{ forloop.counter }})"
+                      style="background:none;border:none;font-size:2.5rem;color:#D1D5DB;cursor:pointer;padding:0;transition:color 0.1s;line-height:1;">★</button>
+              {% endfor %}
+            </div>
+            <input type="hidden" name="rating" id="ratingInput" value="5" required/>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Review Title</label>
+            <input type="text" name="title" class="form-control" placeholder="Summarize your experience"/>
+          </div>
+          <div class="mb-4">
+            <label class="form-label">Your Review *</label>
+            <textarea name="comment" class="form-control" rows="5" placeholder="Tell others about your rental experience..." required></textarea>
+          </div>
+          <div class="d-flex gap-3">
+            <button type="submit" class="btn-rx-primary btn btn-lg"><i class="bi bi-star me-2"></i>Submit Review</button>
+            <a href="/bookings/{{ booking.pk }}/" class="btn-rx-outline btn btn-lg">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+let currentRating = 5;
+function setRating(val) {
+  currentRating = val;
+  document.getElementById('ratingInput').value = val;
+  document.querySelectorAll('.star-btn').forEach((btn, i) => {
+    btn.style.color = i < val ? '#F59E0B' : '#D1D5DB';
+  });
+}
+setRating(5);
+document.querySelectorAll('.star-btn').forEach((btn, i) => {
+  btn.addEventListener('mouseover', () => {
+    document.querySelectorAll('.star-btn').forEach((b, j) => {
+      b.style.color = j <= i ? '#F59E0B' : '#D1D5DB';
+    });
+  });
+  btn.addEventListener('mouseout', () => setRating(currentRating));
+});
+</script>
+{% endblock %}

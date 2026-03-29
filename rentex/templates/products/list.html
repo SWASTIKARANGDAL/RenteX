@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block title %}Browse Electronics – RenteX{% endblock %}
+
+{% block content %}
+<div style="background:var(--rx-gray);border-bottom:1px solid var(--rx-border);padding:1.5rem 0;">
+  <div class="container">
+    <h1 style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;margin-bottom:0.3rem;">Browse Electronics</h1>
+    <p style="color:var(--rx-mid);margin:0;">{{ total_count }} item{{ total_count|pluralize }} available to rent</p>
+  </div>
+</div>
+
+<div class="container py-4">
+  <div class="row g-4">
+
+    <!-- Sidebar Filters -->
+    <div class="col-lg-3">
+      <div class="rx-card p-3 sticky-top" style="top:80px;">
+        <h6 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1rem;font-size:0.95rem;text-transform:uppercase;letter-spacing:0.05em;">Filters</h6>
+        <form method="get" class="rx-form" id="filterForm">
+          <div class="mb-3">
+            <label>Search</label>
+            {{ form.q }}
+          </div>
+          <div class="mb-3">
+            <label>Category</label>
+            {{ form.category }}
+          </div>
+          <div class="mb-3">
+            <label>City</label>
+            {{ form.city }}
+          </div>
+          <div class="mb-3">
+            <label>Min Price (₹/day)</label>
+            {{ form.min_price }}
+          </div>
+          <div class="mb-3">
+            <label>Max Price (₹/day)</label>
+            {{ form.max_price }}
+          </div>
+          <div class="mb-3">
+            <label>Condition</label>
+            {{ form.condition }}
+          </div>
+          <div class="mb-4">
+            <label>Sort By</label>
+            {{ form.sort }}
+          </div>
+          <button type="submit" class="btn-rx-primary btn w-100"><i class="bi bi-funnel me-2"></i>Apply Filters</button>
+          <a href="/products/" class="btn btn-outline-secondary w-100 mt-2" style="border-radius:10px;">Clear All</a>
+        </form>
+      </div>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="col-lg-9">
+      <!-- Category chips -->
+      <div class="d-flex flex-wrap gap-2 mb-4">
+        <a href="/products/" class="rx-chip {% if not request.GET.category %}bg-orange text-white border-orange{% endif %}">All</a>
+        {% for cat in categories %}
+        <a href="?category={{ cat.id }}" class="rx-chip {% if request.GET.category == cat.id|stringformat:'s' %}bg-orange text-white border-orange{% endif %}">
+          <i class="{{ cat.icon }}"></i>{{ cat.name }}
+          <span style="opacity:0.6;">({{ cat.count }})</span>
+        </a>
+        {% endfor %}
+      </div>
+
+      {% if products %}
+      <div class="row g-4">
+        {% for product in products %}
+        <div class="col-sm-6 col-xl-4">
+          {% include 'partials/product_card.html' with product=product %}
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Pagination -->
+      {% if products.has_other_pages %}
+      <nav class="mt-5 d-flex justify-content-center">
+        <ul class="pagination gap-1">
+          {% if products.has_previous %}
+          <li class="page-item"><a class="page-link" href="?page={{ products.previous_page_number }}&{{ request.GET.urlencode }}" style="border-radius:10px;"><i class="bi bi-chevron-left"></i></a></li>
+          {% endif %}
+          {% for num in products.paginator.page_range %}
+            {% if products.number == num %}
+            <li class="page-item active"><span class="page-link" style="background:var(--rx-orange);border-color:var(--rx-orange);border-radius:10px;">{{ num }}</span></li>
+            {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+            <li class="page-item"><a class="page-link" href="?page={{ num }}&{{ request.GET.urlencode }}" style="border-radius:10px;">{{ num }}</a></li>
+            {% endif %}
+          {% endfor %}
+          {% if products.has_next %}
+          <li class="page-item"><a class="page-link" href="?page={{ products.next_page_number }}&{{ request.GET.urlencode }}" style="border-radius:10px;"><i class="bi bi-chevron-right"></i></a></li>
+          {% endif %}
+        </ul>
+      </nav>
+      {% endif %}
+
+      {% else %}
+      <div class="text-center py-5">
+        <div style="font-size:4rem;margin-bottom:1rem;">🔍</div>
+        <h4 style="font-family:'Syne',sans-serif;font-weight:700;">No products found</h4>
+        <p style="color:var(--rx-mid);">Try adjusting your filters or search terms.</p>
+        <a href="/products/" class="btn-rx-primary btn">Clear Filters</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

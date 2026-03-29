@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}About Us – RenteX{% endblock %}
+
+{% block content %}
+<div class="rx-page-header">
+  <div class="container text-center">
+    <h1>About RenteX</h1>
+    <p style="opacity:0.7;font-size:1.1rem;max-width:500px;margin:0 auto;">Making electronics accessible to everyone through the sharing economy</p>
+  </div>
+</div>
+<div class="container py-5">
+  <div class="row align-items-center g-5 mb-5">
+    <div class="col-lg-6">
+      <div class="rx-section-eyebrow mb-2">Our Mission</div>
+      <h2 class="rx-section-title mb-3">Democratizing Access to Technology</h2>
+      <p style="color:#444;line-height:1.8;">RenteX was founded with a simple belief: great technology should be accessible to everyone, not just those who can afford to buy it. Whether you're a student who needs a laptop for a project, a photographer renting a camera for a weekend shoot, or a gamer trying out a new console — RenteX connects you with verified owners who have what you need.</p>
+      <p style="color:#444;line-height:1.8;">For owners, we turn idle gadgets into income streams, creating a win-win for the whole community.</p>
+    </div>
+    <div class="col-lg-6">
+      <div class="row g-3">
+        {% for stat in "1234" %}
+        <div class="col-6">
+          <div class="stat-card text-center">
+            <div class="stat-value" style="font-size:2.5rem;">{% cycle '500+' '50+' '4.8★' '₹2Cr+' %}</div>
+            <div class="stat-label">{% cycle 'Products Listed' 'Cities Covered' 'Avg. Rating' 'Earnings Generated' %}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="text-center py-5" style="background:var(--rx-gray);border-radius:20px;">
+    <h3 style="font-family:'Syne',sans-serif;font-weight:800;margin-bottom:0.5rem;">Join the RenteX Community</h3>
+    <p style="color:var(--rx-mid);margin-bottom:2rem;">Thousands of renters and owners are already part of India's electronics sharing economy.</p>
+    <a href="/accounts/signup/" class="btn-rx-primary btn btn-lg">Get Started Free</a>
+  </div>
+</div>
+{% endblock %}

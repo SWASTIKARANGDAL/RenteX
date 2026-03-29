@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}My Wishlist – RenteX{% endblock %}
+
+{% block content %}
+<div class="rx-page-header"><div class="container"><h1>My Wishlist</h1></div></div>
+<div class="container py-5">
+  {% if items %}
+  <div class="row g-4">
+    {% for item in items %}
+    <div class="col-sm-6 col-lg-3">
+      {% include 'partials/product_card.html' with product=item.product %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div style="text-align:center;padding:5rem 0;color:var(--rx-mid);">
+    <i class="bi bi-heart" style="font-size:4rem;display:block;margin-bottom:1rem;"></i>
+    <h4 style="font-family:'Syne',sans-serif;font-weight:700;">Your wishlist is empty</h4>
+    <p>Save products you like for later.</p>
+    <a href="/products/" class="btn-rx-primary btn mt-2">Browse Products</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
